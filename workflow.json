@@ -1,0 +1,129 @@
+{
+  "name": "Daily Motivation WhatsApp Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are my personal motivational coach.\n\nGenerate ONE unique motivational quote based on today's day.\n\nTheme schedule:\n- Monday: Discipline\n- Tuesday: Wealth and career growth\n- Wednesday: Focus and study\n- Thursday: AI skills and learning\n- Friday: Faith, gratitude, and patience\n- Saturday: Confidence and self-belief\n- Sunday: Reflection and planning\n\nRules:\n- Use the current day to choose the theme\n- Under 25 words\n- Original\n- Powerful\n- Practical\n- No hashtags\n- No author name\n- Output only the quote.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        240,
+        0
+      ],
+      "id": "node-basic-llm-chain",
+      "name": "AI Quote Generator"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        240,
+        220
+      ],
+      "id": "node-groq-model",
+      "name": "Groq Chat Model",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "from": "+14155238886",
+        "to": "+92XXXXXXXXXX",
+        "toWhatsapp": true,
+        "message": "={{$json.text}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        560,
+        0
+      ],
+      "id": "node-whatsapp-sender",
+      "name": "WhatsApp Sender",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "triggerAtHour": 18,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "node-schedule-trigger",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Quote Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Quote Generator": {
+      "main": [
+        [
+          {
+            "node": "WhatsApp Sender",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Quote Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "tags": [
+    {
+      "name": "n8n"
+    },
+    {
+      "name": "automation"
+    },
+    {
+      "name": "ai-agent"
+    },
+    {
+      "name": "whatsapp"
+    }
+  ]
+}
